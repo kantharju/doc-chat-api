@@ -1,12 +1,9 @@
-"""
-chat_engine.py — RAG: retrieves relevant chunks and calls OpenAI to answer.
-"""
-from openai import OpenAI
-
+import httpx
+from groq import Groq
 import config
 from core.embeddings import query_chunks
 
-_client = OpenAI(api_key=config.OPENAI_API_KEY)
+_client = Groq(api_key=config.GROQ_API_KEY, http_client=httpx.Client(verify=False))
 
 SYSTEM_PROMPT = (
     "You are a helpful assistant. Answer the user's question using ONLY "
@@ -16,7 +13,6 @@ SYSTEM_PROMPT = (
 
 
 def answer(question: str) -> dict:
-    """Retrieve relevant chunks and generate an answer using OpenAI."""
     chunks = query_chunks(question)
     if not chunks:
         return {"answer": "No documents found. Please upload a document first.", "sources": []}
